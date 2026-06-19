@@ -1,0 +1,27 @@
+# DS Properties — Local Development Database
+# Usage: docker compose up -d
+
+version: "3.8"
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: dsp-postgres
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: dsp_dev
+      POSTGRES_PASSWORD: dsp_dev_password
+      POSTGRES_DB: dsp_development
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dsp_dev -d dsp_development"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  pgdata:
+    driver: local
