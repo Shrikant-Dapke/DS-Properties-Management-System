@@ -1,13 +1,17 @@
-import { createContext, useContext, useCallback, useState } from 'react';
+import { createContext, useCallback, useState } from 'react';
 import { ToastContainer } from '../components/common/Toast';
 
 /**
  * Toast Context
  *
  * Provides a global toast notification system.
- * Usage: const { toast } = useToast();
- *        toast.success('Transaction created');
- *        toast.error('Something went wrong');
+ * The useToast hook has been extracted to hooks/useToast.js
+ * to satisfy React Fast Refresh (only components in component files).
+ *
+ * Usage:
+ *   import { useToast } from '../hooks/useToast';
+ *   const { toast } = useToast();
+ *   toast.success('Transaction created');
  */
 
 const ToastContext = createContext(null);
@@ -40,14 +44,6 @@ export function ToastProvider({ children }) {
       <ToastContainer toasts={toasts} onDismiss={dismissToast} />
     </ToastContext.Provider>
   );
-}
-
-export function useToast() {
-  const context = useContext(ToastContext);
-  if (!context) {
-    throw new Error('useToast must be used within a ToastProvider');
-  }
-  return context;
 }
 
 export default ToastContext;

@@ -16,7 +16,7 @@ import { SkeletonCard, SkeletonRow } from './components/common/SkeletonLoader';
 import EmptyState from './components/common/EmptyState';
 import Modal from './components/common/Modal';
 import ConfirmDialog from './components/common/ConfirmDialog';
-import { useToast } from './contexts/ToastContext';
+import { useToast } from './hooks/useToast';
 import { formatCurrency, formatDate } from './utils/formatters';
 
 export default function ComponentShowcase() {
