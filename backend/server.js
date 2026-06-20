@@ -10,6 +10,7 @@
 const app = require('./src/app');
 const env = require('./src/config/environment');
 const logger = require('./src/utils/logger');
+const { pool } = require('./src/config/database');
 
 const server = app.listen(env.port, () => {
   logger.info({
@@ -21,10 +22,10 @@ const server = app.listen(env.port, () => {
 
 // --------------- Graceful Shutdown ---------------
 
-function gracefulShutdown(signal) {
+async function gracefulShutdown(signal) {
   logger.info(`${signal} received. Starting graceful shutdown...`);
 
-  server.close((err) => {
+  server.close(async (err) => {
     if (err) {
       logger.error(err, 'Error during server shutdown');
       process.exit(1);
@@ -32,9 +33,13 @@ function gracefulShutdown(signal) {
 
     logger.info('HTTP server closed');
 
-    // Close database pool here when database.js is created (Task 07)
-    // const pool = require('./src/config/database');
-    // await pool.end();
+    // Close database connection pool
+    try {
+      await pool.end();
+      logger.info('Database pool closed');
+    } catch (poolErr) {
+      logger.error(poolErr, 'Error closing database pool');
+    }
 
     logger.info('Graceful shutdown complete');
     process.exit(0);

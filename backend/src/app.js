@@ -11,9 +11,12 @@ const express = require('express');
 const helmet = require('helmet');
 const cors = require('cors');
 const env = require('./config/environment');
+const db = require('./config/database');
 const requestLogger = require('./middleware/requestLogger');
+const { globalLimiter } = require('./middleware/rateLimiter');
 const errorHandler = require('./middleware/errorHandler');
 const { NotFoundError } = require('./utils/errors');
+const routes = require('./routes');
 
 const app = express();
 
@@ -44,21 +47,26 @@ app.use(express.urlencoded({ extended: true, limit: '1mb' }));
 
 app.use(requestLogger);
 
+// --------------- Rate Limiting ---------------
+
+app.use(globalLimiter);
+
 // --------------- Routes ---------------
 
 // Health check — public, no auth required
-app.get('/api/v1/health', (_req, res) => {
+app.get('/api/v1/health', async (_req, res) => {
+  const dbHealthy = await db.healthCheck();
   res.status(200).json({
-    status: 'healthy',
+    status: dbHealthy ? 'healthy' : 'degraded',
     timestamp: new Date().toISOString(),
     uptime: Math.floor(process.uptime()),
-    database: 'not_connected', // Will be updated when DB module is added (Task 07)
+    database: dbHealthy ? 'connected' : 'disconnected',
     version: '1.0.0',
   });
 });
 
-// API routes will be mounted here in Task 10+
-// app.use('/api/v1', require('./routes'));
+// API routes
+app.use('/api/v1', routes);
 
 // --------------- 404 Handler ---------------
 

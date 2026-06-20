@@ -4,6 +4,47 @@
 
 ---
 
+## 2026-06-20 — Phase 0 Scaffolding & Phase 1 Backend Implementation
+
+### Session 2: Backend Core Initialization & Auth Architecture Setup
+
+**Scope:** Set up the backend project framework, create the design system base components for the frontend, design/implement database migrations/seeds, and build the complete authentication backend (models, services, routes, middleware, and audit logs).
+
+---
+
+#### 12:30 — Task 02: Initialize Backend Project
+- Created package.json, eslint config, server.js, app.js, environment/constants config, logger, error utilities, and error/request-logging middlewares.
+- Verified that linting runs clean (`npm run lint` passes).
+- Verified that the Express app starts and the health check endpoint `/api/v1/health` responds correctly.
+
+#### 12:35 — Task 03: Initialize Frontend Project
+- Scaffolded Vite React application.
+- Configured Tailwind CSS with custom theme colors, spacing, and Inter font loading.
+- Wired up development proxy for `/api` requests.
+
+#### 12:40 — Task 04: Design System Foundation Components (Partially Complete)
+- Created base UI components: Button, Input, Select, Card, Badge, LoadingSpinner, SkeletonLoader, EmptyState, Modal, ConfirmDialog, Toast, ToastContext, formatters, and constants.
+- Note: A minor ESLint fast-refresh error in `ToastContext.jsx` is pending resolution.
+
+#### 12:45 — Tasks 05 & 06: Database Migrations & Seeds (Partially Complete)
+- Coded all 8 SQL migration files (tables, indexes, check constraints, auto-updated_at triggers) and the `migrate.js` script.
+- Coded seeds (categories, admin, settings) and the `seed.js` script.
+- Verification is pending database availability.
+
+#### 12:50 — Tasks 07 & 08: Database pool & Auth Models (Partially Complete)
+- Implemented `database.js` connection pool.
+- Implemented `userModel.js` and `refreshTokenModel.js`.
+
+#### 12:55 — Tasks 09 & 10: Auth Service & API (Partially Complete)
+- Implemented authentication business logic in `authService.js` (including password hashing, JWT generation, and account lockout).
+- Implemented auth controllers, validators (Joi), and routes (`/login`, `/refresh`, `/logout`, `/change-password`).
+
+#### 13:00 — Tasks 11 & 12: Middlewares & Audit Logger (Partially Complete)
+- Created authentication (`authenticate.js`), authorization (`authorize.js`), and tiered rate-limiting (`rateLimiter.js`) middlewares.
+- Created audit log middleware (`auditLogger.js`) and database model (`auditModel.js`).
+
+---
+
 ## 2026-06-19 — Planning & Architecture Phase
 
 ### Session 1: Document Analysis & Architecture Review
