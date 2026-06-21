@@ -1,36 +1,42 @@
 # DS Properties — Next Task
 
-**Last Updated:** 2026-06-20  
-**Source of Truth:** This file defines exactly what should be done next. Update after each task completion.
+**Last Updated:** 2026-06-21  
+**Source of Truth:** [PROJECT_REALITY_AUDIT.md](PROJECT_REALITY_AUDIT.md) — codebase verification  
+**Audit Reference:** Task 13 is coded but not complete; finish it before Task 14.
 
 ---
 
 ## Current Task
 
-### Task 13: Build Login Page (Frontend) & Resolve Task 04 Lint Issue
+### Task 13 (Finish): Login Page — Fix Bugs, Verify, Close Acceptance Criteria
 
 **Phase:** 1 — Database & Authentication  
 **Complexity:** Medium  
-**Reference:** [AI_EXECUTION_PACK.md → Task 13](file:///C:/Users/dapke/Desktop/DS%20Project/DS-Properties-Management-System/docs/AI_EXECUTION_PACK.md)
+**Reference:** [AI_EXECUTION_PACK.md → Task 13](AI_EXECUTION_PACK.md)
 
 ---
 
 ### Objective
 
-1. **Resolve Task 04 Lint Issue:** Refactor `ToastContext.jsx` to clear the React Refresh warning (split the hook/context default export from the provider component export, or configure ESLint rules) to satisfy the "No console errors or warnings" criterion for Task 04.
-2. **Build Login Page UI:** Create the login page UI with form validation, error handling, and redirect. Build out the frontend authentication context (`AuthContext.jsx`), custom auth hooks (`useAuth.js`), and the HTTP API clients (`client.js`, `authApi.js`).
+Task 13 files already exist (`LoginPage.jsx`, `AuthContext.jsx`, `api/client.js`, `api/authApi.js`, `hooks/useAuth.js`). Complete remaining work:
+
+1. **Fix critical backend bug:** `ForbiddenError` is imported in `authService.js` and `authorize.js` but not exported from `errors.js` — account lockout and 403 paths crash at runtime.
+2. **Fix frontend ESLint:** Refactor `AuthContext.jsx` (split context export from provider; resolve `react-hooks/set-state-in-effect`).
+3. **Verify with live database:** Start PostgreSQL, run migrations + seeds, test admin login end-to-end.
+4. **Close Task 01/04 gaps:** Add `.nvmrc` (Node 20) and `formatINR` to `formatters.js`.
 
 ---
 
-### Files to Create
+### Files Already Created (verify, do not recreate)
 
-| File | Purpose |
-|------|---------|
-| `frontend/src/pages/LoginPage.jsx` | Login screen view with form inputs and styling |
-| `frontend/src/api/client.js` | Axios client instance with request/response interceptors (auth header injection & 401 auto-refresh handler) |
-| `frontend/src/api/authApi.js` | Auth endpoint callers (login, refresh, logout, change-password) |
-| `frontend/src/contexts/AuthContext.jsx` | React context providing auth states (`user`, `token`, `isAuthenticated`) and utility methods (`login`, `logout`) |
-| `frontend/src/hooks/useAuth.js` | Custom hook wrapper for Toast and Authentication Contexts |
+| File | Status |
+|------|--------|
+| `frontend/src/pages/LoginPage.jsx` | ✅ Exists |
+| `frontend/src/api/client.js` | ✅ Exists |
+| `frontend/src/api/authApi.js` | ✅ Exists |
+| `frontend/src/contexts/AuthContext.jsx` | ✅ Exists — needs lint fix |
+| `frontend/src/hooks/useAuth.js` | ✅ Exists |
+| `frontend/src/App.jsx` | ✅ AuthProvider + login route + inline ProtectedRoute |
 
 ---
 
@@ -38,45 +44,51 @@
 
 | File | Changes Required |
 |------|------------------|
-| `frontend/src/contexts/ToastContext.jsx` | Split exports to resolve React Fast Refresh warning |
-| `frontend/src/App.jsx` | Wrap the main router/views with `AuthProvider` and mount `/login` route |
-| `frontend/src/main.jsx` | Wrap the root rendering with `BrowserRouter` (if not done) |
+| `backend/src/utils/errors.js` | Export `ForbiddenError` (alias to `AuthorizationError`) or update imports to use `AuthorizationError` / `AccountLockedError` |
+| `backend/src/services/authService.js` | Use correct error classes for lockout (423) |
+| `backend/src/middleware/authorize.js` | Fix error class import |
+| `backend/src/validators/authValidators.js` | Align login password min to 8 (per spec) |
+| `frontend/src/contexts/AuthContext.jsx` | Split exports; fix setState-in-effect lint |
+| `.nvmrc` | Create with `20` |
+| `frontend/src/utils/formatters.js` | Add `formatINR` export |
 
 ---
 
 ### Dependencies
 
-- 🔶 **Task 04 (Design System):** In Progress (Coded, but requires split context/hook export refactoring to pass ESLint).
-- 🔶 **Task 10 (Auth API):** In Progress (Coded, but database connection and integration test coverage are blocked by database server availability).
+- 🔶 **Task 04:** In Progress — close lint + `formatINR` as part of this work
+- 🔶 **Task 10:** In Progress — auth API coded; needs DB + bug fix to verify
+- 🔴 **PostgreSQL:** Must be running (`docker compose up -d`)
 
 ---
 
 ### Acceptance Criteria
 
-- [ ] ESLint check on frontend runs with zero errors or warnings (`npm run lint` passes)
+- [ ] `ForbiddenError` / lockout paths work without runtime crash
+- [ ] `npm run lint` passes in both `backend/` and `frontend/`
 - [ ] Login page renders with no console errors
 - [ ] Successful login redirects to `/dashboard`
-- [ ] Failed login shows user-friendly error message ("Invalid username or password")
-- [ ] Loading spinner animation displays on button during API call
-- [ ] Token refresh happens automatically on 401 (interceptor intercepts 401, invokes refresh, retries original call)
-- [ ] Page refresh preserves session (auto-restores access token using refresh token in localStorage)
+- [ ] Failed login shows "Invalid username or password"
+- [ ] Loading spinner on button during API call
+- [ ] Token refresh on 401 via axios interceptor
+- [ ] Page refresh preserves session (refresh token in localStorage)
+- [ ] Admin login works after `npm run migrate` + `npm run seed`
 
 ---
 
 ### Definition of Done
 
-- Fast refresh lint issues in the frontend are fully resolved
-- Admin login is fully testable and works (assuming database connectivity is available)
-- Page refresh maintains the logged-in user state
-- Bad credentials display correct error toasts or inline validation messages
-- ESLint checks pass cleanly on all modified and newly created files
+- All Task 13 acceptance criteria verified with live database
+- Critical auth bugs fixed
+- Frontend and backend lint clean
+- Task 13 marked complete in `PROJECT_STATUS.md`
 
 ---
 
 ### After Completion
 
 1. Mark Task 13 as ✅ in `PROJECT_STATUS.md`
-2. Update this file (`NEXT_TASK.md`) to **Task 14: Build App Layout (Frontend)**
+2. Update this file to **Task 14: Build App Layout (Frontend)**
 3. Add entry to `CHANGELOG.md`
 
 ---
@@ -85,7 +97,7 @@
 
 | Order | Task # | Title | Depends On |
 |-------|--------|-------|------------|
-| **NEXT →** | **13** | **Build Login Page (Frontend)** | 🔶 Task 04, 🔶 Task 10 |
-| 2nd | 14 | Build App Layout (Frontend) | Task 13 |
+| **NOW →** | **13** | **Finish Login Page (verify + fix)** | DB, bug fixes |
+| NEXT | 14 | Build App Layout (Frontend) | Task 13 |
 | 3rd | 15 | Build Customer Backend | Task 11, Task 12 |
 | 4th | 16 | Build Category Backend | Task 11, Task 12 |

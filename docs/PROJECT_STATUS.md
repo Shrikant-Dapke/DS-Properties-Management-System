@@ -1,8 +1,9 @@
 # DS Properties — Project Status
 
-**Last Updated:** 2026-06-20  
+**Last Updated:** 2026-06-21  
+**Source of Truth:** Codebase verified in [PROJECT_REALITY_AUDIT.md](PROJECT_REALITY_AUDIT.md)  
 **Current Phase:** Phase 1 — Database & Authentication (In Progress)  
-**Overall Progress:** Tasks 01–03 complete. Tasks 04–12 are In Progress (code-complete but pending runtime verification and testing). Next task is Task 13 (Login UI).
+**Overall Progress:** 2/38 tasks complete (5.3%). 11 tasks in progress. 25 tasks not started.
 
 ---
 
@@ -11,8 +12,8 @@
 | Phase | Name | Status | Tasks |
 |-------|------|--------|-------|
 | Planning | Architecture Review & Planning | ✅ Complete | 8/8 documents created |
-| Phase 0 | Project Setup & Scaffolding | 🔶 In Progress | 3/4 tasks complete, 1/4 in progress |
-| Phase 1 | Database & Authentication | 🔶 In Progress | 0/10 tasks fully complete, 8/10 in progress, 2/10 not started |
+| Phase 0 | Project Setup & Scaffolding | 🔶 In Progress | 2/4 complete, 2/4 in progress |
+| Phase 1 | Database & Authentication | 🔶 In Progress | 0/10 complete, 9/10 in progress, 1/10 not started |
 | Phase 2 | Core Features (Transactions & Dashboard) | 🔲 Not Started | 0/11 tasks |
 | Phase 3 | Reports, Export & Settings | 🔲 Not Started | 0/6 tasks |
 | Phase 4 | Testing, Polish & Deployment | 🔲 Not Started | 0/7 tasks |
@@ -34,13 +35,12 @@
 | P-07 | Development Roadmap & AI Execution Pack | 2026-06-19 | `docs/DEVELOPMENT_ROADMAP.md`, `docs/AI_EXECUTION_PACK.md` — 38 tasks |
 | P-08 | Project tracking documents | 2026-06-19 | `PROJECT_STATUS.md`, `NEXT_TASK.md`, `DECISIONS.md`, `CHANGELOG.md` |
 
-### Phase 0: Project Setup & Scaffolding 🔶
+### Phase 0: Project Setup & Scaffolding
 
 | # | Task | Date | Output |
 |---|------|------|--------|
-| 01 | Initialize Project Structure | 2026-06-19 | `.gitignore`, `.nvmrc`, `README.md`, `docker-compose.yml`, backend folder structure, frontend structure. Committed to git. |
-| 02 | Initialize Backend Project | 2026-06-20 | Backend folder structure, package.json, eslint, environment config, constants, logger, error utilities, and Express server with health checks. |
-| 03 | Initialize Frontend Project | 2026-06-20 | React/Vite scaffolding, Tailwind CSS integration, Google Fonts (Inter) loading, custom theme tokens, and development API proxy. |
+| 02 | Initialize Backend Project | 2026-06-20 | Express server, health check, env validation, logging, error handling. Backend lint passes. |
+| 03 | Initialize Frontend Project | 2026-06-20 | React/Vite, Tailwind v4 theme, Inter font, API proxy, page title. |
 
 ---
 
@@ -48,15 +48,17 @@
 
 | # | Task | Started | Notes / Verification Blockers |
 |---|------|---------|-------------------------------|
-| 04 | Design System Foundation Components | 2026-06-20 | Coded. **Blocked on ESLint/Vite Fast Refresh warning** in `ToastContext.jsx` (hook/provider export restriction). |
-| 05 | Create Database Migrations | 2026-06-20 | Coded. **Blocked on DB connectivity**: local PostgreSQL server or Docker is not running in the current environment. |
-| 06 | Create Seed Data Scripts | 2026-06-20 | Coded. **Blocked on DB connectivity** (depends on Task 05 database execution). |
-| 07 | Database Connection & Configuration | 2026-06-20 | Coded. **Blocked on DB connectivity** (unable to test/verify connection). |
-| 08 | Build User & Auth Models | 2026-06-20 | Coded. **Blocked on DB connectivity and unit tests** (Phase 4). |
-| 09 | Build Auth Service | 2026-06-20 | Coded. **Blocked on DB connectivity and unit tests** (Phase 4). |
-| 10 | Build Auth Controller, Routes & Validators | 2026-06-20 | Coded. **Blocked on DB connectivity and integration tests** (Phase 4). |
-| 11 | Build JWT Authentication & Authorization Middleware | 2026-06-20 | Coded. **Blocked on DB connectivity and integration tests** (Phase 4). |
-| 12 | Build Audit Logging Middleware | 2026-06-20 | Coded. **Blocked on DB connectivity and verification** (Phase 4). |
+| 01 | Initialize Project Structure | 2026-06-19 | Missing `.nvmrc`. Docker not verified on audit machine. |
+| 04 | Design System Foundation Components | 2026-06-20 | All 11 components coded. Missing `formatINR`. Frontend lint fails (`AuthContext.jsx`). |
+| 05 | Create Database Migrations | 2026-06-20 | 8 SQL files + `migrate.js` coded. Not executed (PostgreSQL/Docker unavailable). |
+| 06 | Create Seed Data Scripts | 2026-06-20 | 3 seed files + `seed.js` coded. Not executed. |
+| 07 | Database Connection & Configuration | 2026-06-20 | Pool coded (max 20). Missing `min: 5`. No startup connection test. |
+| 08 | Build User & Auth Models | 2026-06-20 | Models coded. No unit tests. DB queries unverified. |
+| 09 | Build Auth Service | 2026-06-20 | Service coded. **`ForbiddenError` import bug** (undefined export). No unit tests. |
+| 10 | Build Auth Controller, Routes & Validators | 2026-06-20 | 4 endpoints coded. Login password min is 6 (spec: 8). No integration tests. |
+| 11 | JWT Auth & Authorization Middleware | 2026-06-20 | Middleware coded. `ForbiddenError` bug. Rate limiters per-IP not per-user. |
+| 12 | Build Audit Logging Middleware | 2026-06-20 | Middleware + model coded. Not wired to mutation routes (no CRUD routes yet). |
+| 13 | Build Login Page (Frontend) | 2026-06-20 | Login page, AuthContext, API client coded. Lint fails. E2E login unverified. |
 
 ---
 
@@ -64,12 +66,12 @@
 
 | # | Task | Phase | Complexity | Blocked By |
 |---|------|-------|-----------|------------|
-| 13 | Build Login Page (Frontend) | 1 | Medium | Task 04 (Design System lint fix), Task 10 (Auth API) |
+| 13 | Finish Login Page (verify + fix bugs) | 1 | Medium | ForbiddenError bug, frontend lint, DB availability |
 | 14 | Build App Layout (Frontend) | 1 | Medium | Task 13 |
 | 15 | Build Customer Backend | 2 | Medium | Task 11, Task 12 |
-| 16 | Build Category Backend | 2 | Low | Task 11, Task 12 |
 
-> For the full task list (38 tasks), see [AI_EXECUTION_PACK.md](file:///C:/Users/dapke/Desktop/DS%20Project/DS-Properties-Management-System/docs/AI_EXECUTION_PACK.md)
+> Full task list: [AI_EXECUTION_PACK.md](AI_EXECUTION_PACK.md)  
+> Forensic audit: [PROJECT_REALITY_AUDIT.md](PROJECT_REALITY_AUDIT.md)
 
 ---
 
@@ -78,13 +80,14 @@
 | Metric | Value |
 |--------|-------|
 | Total Tasks | 38 |
-| Fully Completed | 3 / 38 (7.9%) |
-| In Progress | 9 / 38 (23.7%) |
-| API Endpoints Designed | 28 |
-| Database Tables Designed | 7 |
-| Frontend Pages Planned | 7 |
-| Security Controls Defined | 80+ |
-| Git Commits | 5 |
+| Fully Completed | 2 / 38 (5.3%) |
+| In Progress | 11 / 38 (28.9%) |
+| Not Started | 25 / 38 (65.8%) |
+| API Endpoints Implemented | 4 / 28 (auth only) |
+| Database Tables (SQL written) | 7 / 7 |
+| Frontend Pages Implemented | 1 / 7 (login only; dashboard is placeholder) |
+| Automated Tests | 0 |
+| Git Commits | 8 |
 
 ---
 
@@ -92,12 +95,12 @@
 
 | # | Blocker/Risk | Status | Notes |
 |---|-------------|--------|-------|
-| 1 | Database availability | 🛑 Active Blocker | Local PostgreSQL server or Docker is not running, preventing database migration and seed script verification. |
-| 2 | ESLint Fast Refresh error | 🔶 Minor Blocker | `ToastContext.jsx` triggers a React Refresh warning because it exports both components and hooks. |
-| 3 | VPS credentials from client | Not yet needed | Required for Phase 4 deployment |
-| 4 | Domain name for production | Not yet needed | Required for Phase 4 deployment |
-| 5 | DS Properties logo | Not yet needed | Using "DSP" placeholder until provided |
-| 6 | Historical data for migration | Not yet discussed | CSV import utility planned but not in Phase 1 tasks |
+| 1 | **`ForbiddenError` undefined at runtime** | 🔴 Critical | `authService.js` and `authorize.js` import non-existent export |
+| 2 | Database availability | 🔴 Active | Docker not available; migrations/seeds not executed |
+| 3 | Frontend ESLint errors | 🟡 Medium | `AuthContext.jsx` — 2 errors |
+| 4 | Zero automated tests | 🟠 High | `backend/tests/` does not exist |
+| 5 | Tracking doc drift | 🟡 Resolved | Corrected in 2026-06-21 audit |
+| 6 | VPS credentials / domain | Not yet needed | Phase 4 deployment |
 
 ---
 
@@ -106,12 +109,11 @@
 > [!IMPORTANT]
 > If you are an AI assistant continuing this project without previous chat history, start here:
 >
-> 1. Read `PROJECT_STATUS.md` (this file) for current state
-> 2. Read `NEXT_TASK.md` for what to do next
-> 3. Read `TASK_AUDIT.md` for strict acceptance criteria verification results
-> 4. Read `DECISIONS.md` for architectural decisions already made
-> 5. Read `AI_EXECUTION_PACK.md` for the full task breakdown
-> 6. Reference `DATABASE_REVIEW.md`, `API_REVIEW.md`, `SECURITY_CHECKLIST.md` for specifications
-> 7. Reference `PROJECT_MASTER_PLAN.md` for folder structure and technology stack
+> 1. Read `docs/PROJECT_REALITY_AUDIT.md` for verified codebase state
+> 2. Read `PROJECT_STATUS.md` (this file) for current state
+> 3. Read `NEXT_TASK.md` for what to do next
+> 4. Read `AI_EXECUTION_PACK.md` for the full task breakdown
+> 5. Reference `DATABASE_REVIEW.md`, `API_REVIEW.md`, `SECURITY_CHECKLIST.md` for specifications
 >
-> **Do NOT re-plan or re-architect.** The architecture review has been completed. Follow the execution pack tasks in order.
+> **Do NOT trust prior completion percentages.** Verify against source code.
+> **Do NOT re-plan or re-architect.** Follow the execution pack tasks in order.
