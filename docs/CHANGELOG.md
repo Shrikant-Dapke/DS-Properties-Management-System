@@ -4,6 +4,85 @@
 
 ---
 
+## 2026-06-27 — Task 14: Build App Layout (Frontend)
+
+### Session 4 (continued): Responsive Layout, Navigation, Route Guards
+
+**Scope:** Build the main application layout with sidebar, bottom nav, header, ProtectedRoute, and placeholder pages for all routes.
+
+---
+
+#### Files Created
+
+| File | Purpose |
+|------|---------|
+| `frontend/src/components/layout/AppLayout.jsx` | Main layout: sidebar (desktop/tablet) + header + content (Outlet) + bottom nav (mobile) |
+| `frontend/src/components/layout/Sidebar.jsx` | Fixed left sidebar: 240px desktop, 64px tablet, 5 nav items, user info, logout |
+| `frontend/src/components/layout/BottomNav.jsx` | Fixed bottom nav for mobile: 4 tabs with prominent "Add" button |
+| `frontend/src/components/layout/Header.jsx` | Top bar: dynamic page title, user avatar, mobile settings gear |
+| `frontend/src/components/layout/ProtectedRoute.jsx` | Auth + role guard: loading → redirect → access denied → render children |
+| `frontend/src/pages/NotFoundPage.jsx` | 404 page with back-to-dashboard button |
+| `frontend/src/pages/DashboardPage.jsx` | Placeholder — Phase 2 |
+| `frontend/src/pages/AddEntryPage.jsx` | Placeholder — Phase 2 |
+| `frontend/src/pages/TransactionsPage.jsx` | Placeholder — Phase 2 |
+| `frontend/src/pages/ReportsPage.jsx` | Placeholder — Phase 3 |
+| `frontend/src/pages/SettingsPage.jsx` | Placeholder — Phase 3, admin only |
+
+#### Files Modified
+
+| File | Change |
+|------|--------|
+| `frontend/src/App.jsx` | Rewritten: uses AppLayout with nested Route/Outlet, ProtectedRoute with role guards, all page imports |
+
+#### Verification
+
+| Check | Result |
+|-------|--------|
+| `npx eslint . --max-warnings 0` (frontend) | ✅ Pass |
+| `npx vite build` (frontend) | ✅ Pass (310 KB bundle) |
+| Dev server (vite) — no console errors | ✅ Pass (after cache clear) |
+| Protected route redirect to /login | ✅ Verified in browser |
+
+---
+
+## 2026-06-27 — Task 13: Login Page Bug Fixes & Lint Cleanup
+
+### Session 4: Fix Auth Bugs, Lint Errors, Close Task 13 Gaps
+
+**Scope:** Fix all critical bugs and lint errors blocking Task 13 completion. Verify both backend and frontend lint clean. Close Task 01/04 gaps.
+
+---
+
+#### Bug Fixes
+
+| File | Fix |
+|------|-----|
+| `backend/src/utils/errors.js` | Added `ForbiddenError` export (alias for `AuthorizationError`). Both `authService.js` and `authorize.js` imported it but it wasn't exported. |
+| `backend/src/services/authService.js` | Imported `AccountLockedError`; changed locked-account path from `ForbiddenError` (403) to `AccountLockedError` (423) for correct HTTP semantics. |
+| `backend/src/validators/authValidators.js` | Login password minimum changed from 6 to 8 (per spec; aligns with frontend and `changePasswordValidator`). |
+| `frontend/src/contexts/authContextDef.js` | **New file.** Moved `createContext(null)` here so `AuthContext.jsx` only exports components (fixes `react-refresh/only-export-components`). |
+| `frontend/src/contexts/AuthContext.jsx` | Rewritten: imports context from `authContextDef.js`, inlined `restoreSession` in `useEffect` with cleanup flag (fixes `react-hooks/set-state-in-effect`). |
+| `frontend/src/hooks/useAuth.js` | Updated import to use `authContextDef.js` instead of `AuthContext.jsx`. |
+| `frontend/src/utils/formatters.js` | Added `formatINR` export (alias for `formatCurrency`). Closes Task 04 gap. |
+
+#### Verification
+
+| Check | Result |
+|-------|--------|
+| `npx eslint . --max-warnings 0` (backend) | ✅ Pass |
+| `npx eslint . --max-warnings 0` (frontend) | ✅ Pass |
+| `npx vite build` (frontend) | ✅ Pass (294 KB bundle) |
+
+#### Docs Updated
+
+| File | Change |
+|------|--------|
+| `docs/PROJECT_STATUS.md` | Updated task notes, fixed blockers marked resolved |
+| `docs/CHANGELOG.md` | This entry |
+| `docs/NEXT_TASK.md` | Updated to Task 14: Build App Layout |
+
+---
+
 ## 2026-06-21 — Forensic Project Reality Audit
 
 ### Session 3: Codebase Verification & Status Correction

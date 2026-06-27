@@ -13,9 +13,9 @@ const loginValidator = Joi.object({
       'string.max': 'Username must not exceed 50 characters',
       'any.required': 'Username is required',
     }),
-  password: Joi.string().min(6).max(128).required()
+  password: Joi.string().min(8).max(128).required()
     .messages({
-      'string.min': 'Password must be at least 6 characters',
+      'string.min': 'Password must be at least 8 characters',
       'string.max': 'Password must not exceed 128 characters',
       'any.required': 'Password is required',
     }),

@@ -1,4 +1,4 @@
-import { createContext, useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { loginApi, logoutApi, refreshApi } from '../api/authApi';
 import {
   setAccessToken,
@@ -6,9 +6,10 @@ import {
   getRefreshToken,
   clearAllTokens,
 } from '../api/client';
+import AuthContext from './authContextDef';
 
 /**
- * DS Properties — Auth Context
+ * DS Properties — Auth Provider
  *
  * Provides authentication state and methods throughout the app:
  *   - user: current user object (publicId, name, username, role)
@@ -22,8 +23,6 @@ import {
  *   attempts to restore the session by calling the refresh endpoint.
  */
 
-export const AuthContext = createContext(null);
-
 // User data key for session persistence
 const USER_DATA_KEY = 'dsp_user_data';
 
@@ -31,41 +30,41 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  /**
-   * Attempt to restore session from stored refresh token
-   */
-  const restoreSession = useCallback(async () => {
-    const storedRefreshToken = getRefreshToken();
-    if (!storedRefreshToken) {
-      setIsLoading(false);
-      return;
-    }
-
-    try {
-      // Try to get a new access token
-      const response = await refreshApi(storedRefreshToken);
-      const newAccessToken = response.data.accessToken;
-      setAccessToken(newAccessToken);
-
-      // Restore user data from localStorage
-      const storedUser = localStorage.getItem(USER_DATA_KEY);
-      if (storedUser) {
-        setUser(JSON.parse(storedUser));
-      }
-    } catch {
-      // Refresh failed — clear everything
-      clearAllTokens();
-      localStorage.removeItem(USER_DATA_KEY);
-      setUser(null);
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
-
-  // Restore session on mount
+  // Restore session on mount — logic inlined to satisfy react-hooks/set-state-in-effect
   useEffect(() => {
+    let cancelled = false;
+
+    async function restoreSession() {
+      const storedRefreshToken = getRefreshToken();
+      if (!storedRefreshToken) {
+        if (!cancelled) setIsLoading(false);
+        return;
+      }
+
+      try {
+        const response = await refreshApi(storedRefreshToken);
+        const newAccessToken = response.data.accessToken;
+        setAccessToken(newAccessToken);
+
+        const storedUser = localStorage.getItem(USER_DATA_KEY);
+        if (storedUser && !cancelled) {
+          setUser(JSON.parse(storedUser));
+        }
+      } catch {
+        clearAllTokens();
+        localStorage.removeItem(USER_DATA_KEY);
+        if (!cancelled) setUser(null);
+      } finally {
+        if (!cancelled) setIsLoading(false);
+      }
+    }
+
     restoreSession();
-  }, [restoreSession]);
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   /**
    * Login with username and password
@@ -126,4 +125,4 @@ export function AuthProvider({ children }) {
   );
 }
 
-export default AuthContext;
+export default AuthProvider;

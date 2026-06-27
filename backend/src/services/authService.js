@@ -13,7 +13,7 @@ const env = require('../config/environment');
 const userModel = require('../models/userModel');
 const refreshTokenModel = require('../models/refreshTokenModel');
 const auditModel = require('../models/auditModel');
-const { AuthenticationError, ForbiddenError, NotFoundError, ValidationError } = require('../utils/errors');
+const { AuthenticationError, ForbiddenError, AccountLockedError, NotFoundError, ValidationError } = require('../utils/errors');
 
 const SALT_ROUNDS = 12;
 
@@ -83,7 +83,7 @@ async function login(username, password, meta = {}) {
       ipAddress: meta.ipAddress,
       userAgent: meta.userAgent,
     });
-    throw new ForbiddenError(`Account is locked. Try again in ${minutesLeft} minute(s).`);
+    throw new AccountLockedError(new Date(user.locked_until));
   }
 
   // Verify password

@@ -71,12 +71,16 @@ class RateLimitError extends AppError {
   }
 }
 
+// Alias: some modules import ForbiddenError (semantically identical to AuthorizationError)
+const ForbiddenError = AuthorizationError;
+
 module.exports = {
   AppError,
   NotFoundError,
   ValidationError,
   AuthenticationError,
   AuthorizationError,
+  ForbiddenError,
   AccountLockedError,
   ConflictError,
   RateLimitError,

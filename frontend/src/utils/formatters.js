@@ -18,6 +18,11 @@ export function formatCurrency(amount) {
 }
 
 /**
+ * Alias for formatCurrency — explicit INR formatter (Task 04 spec)
+ */
+export const formatINR = formatCurrency;
+
+/**
  * Format a number with Indian comma grouping (no currency symbol)
  * @param {number} amount
  * @returns {string} e.g., "15,00,000.50"
